@@ -34,6 +34,18 @@ source ~/.bashrc
 
 ## 🚀 How to Use
 
+When you launch the script, a custom ASCII banner will appear like this:
+
+```
+  ___ ___                           .__________              .__        
+ /   |   \_____    _____   ____   __| _/\   _  \ ___  ___    |__|______ 
+/    ~    \__  \  /     \_/ __ \ / __ | /  /_\  \  \/  /    |  \_  __ \
+\    Y    // __ \|  Y Y  \  ___// /_/ | \  \_/   \>    <     |  ||  | \/
+ \___|_  /(____  /__|_|  /\___  >____ |  \_____  /__/_\_ \ /\ |__||__|   
+       \/      \/      \/     \/     \/        \/      \/ \/            
+```
+This replaces the default Dalfox splash and gives you visual feedback that the script is running.
+
 ### 1. Clone the repository:
 ```bash
 git clone https://your-git-repo/xss-recon
