@@ -58,6 +58,25 @@ You will be prompted to enter a domain name, and then asked if you want to run D
 
 ---
 
+## 🎯 Attack Types – Explained
+
+| Mode | Name                         | Description |
+|------|------------------------------|-------------|
+| 1    | **Reflected XSS**            | Tests for classic XSS where user input is reflected directly into the response without sanitization. |
+| 2    | **Stored XSS**               | Attempts to inject payloads that persist (e.g., in a comment or profile field) and get executed later. |
+| 3    | **DOM-Based XSS**            | Focuses on JavaScript sinks in the DOM that may execute user-controlled data (e.g. `document.location`). |
+| 4    | **Blind XSS**                | Injects payloads designed to trigger in places the attacker cannot immediately see (like admin panels). Requires a listener. |
+| 5    | **Parameter Analysis**       | Identifies parameters that show reflective or behavioral anomalies that could lead to XSS. |
+| 6    | **BAV (Bad Access Vector)**  | Tries to break out of contexts using payloads that can disrupt tag/attribute structures. |
+| 7    | **Encoder Bypass**           | Uses encoded versions of payloads (e.g., `&#x3C;`, `%3C`, etc.) to bypass WAFs or poorly written filters. |
+| 8    | **Polyglot Payloads**        | Sends universal payloads that can work across multiple contexts (attribute, script, tag). |
+| 9    | **Context-Aware Injection**  | Dalfox automatically chooses the best payload based on where the input is injected (tag body, attr, JS, etc.). |
+| 10   | **Reflection Grepping**      | Highlights exact locations where your input is reflected back in the response for manual follow-up. |
+| 11   | **Header Injection Testing** | Tries injecting payloads into headers like `User-Agent`, `Referer`, etc. to check for downstream reflection. |
+| 12   | **Static File Testing**      | Targets `.js`, `.json`, `.xml` files that might expose sensitive or injectable values. |
+| 13   | **MIME Sniffing XSS**        | Checks misconfigured `Content-Type` headers that let browsers interpret responses incorrectly (e.g., treat HTML as JS). |
+
+
 ## 📁 Output Files
 All results will be saved under:
 ```bash
