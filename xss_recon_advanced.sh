@@ -10,59 +10,59 @@ REQUIRED_TOOLS=("assetfinder" "httpx" "gau" "waybackurls" "paramspider")
 
 for tool in "${REQUIRED_TOOLS[@]}"; do
     if ! command -v $tool &> /dev/null; then
-        echo -e "${RED}❌ ابزار $tool نصب نیست. لطفاً نصبش کن و دوباره اجرا کن.${NC}"
+        echo -e "${RED}❌ Tool $tool is not installed. Please install it and try again.${NC}"
         exit 1
     fi
 done
 
-read -p "🔍 لطفاً دامنه را وارد کن (مثال: example.com): " domain
+read -p "🔍 Enter the domain (e.g., example.com): " domain
 
 start_time=$(date +%s)
-echo -e "${BLUE}🚀 شروع عملیات برای ${domain}...${NC}"
+echo -e "${BLUE}🚀 Starting recon for ${domain}...${NC}"
 
 mkdir -p ~/xss-recon/$domain
 cd ~/xss-recon/$domain || exit
 
 echo -ne "${BLUE}[1/9] Running assetfinder...${NC}
 "
-# جمع‌آوری ساب‌دامین‌ها و حذف تکراری‌ها با و بدون پروتکل
+# Collect subdomains and remove duplicates (without protocol and www)
 assetfinder --subs-only $domain | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www\.//' | sort -u > subdomains.txt
 
 echo -ne "${BLUE}[2/9] Probing with httpx...${NC}
 "
-# بررسی دامنه‌های زنده
+# Check live domains
 cat subdomains.txt | httpx -silent | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www\.//' | sort -u > live-subdomains.txt
 
 echo -ne "${BLUE}[3/9] Fetching URLs with gau and waybackurls...${NC}
 "
-# استخراج URLها
+# Extract URLs
 cat live-subdomains.txt | while read line; do echo https://$line; done | tee formatted.txt | gau > gau.txt
 cat formatted.txt | waybackurls > wayback.txt
 cat gau.txt wayback.txt | sort -u > all-urls.txt
 
 echo -ne "${BLUE}[4/9] Filtering parameterized URLs...${NC}
 "
-# فیلتر لینک‌های دارای پارامتر
+# Filter URLs with parameters
 cat all-urls.txt | grep "=" > urls-with-params.txt
 
 echo -ne "${BLUE}[5/9] Removing static/API entries...${NC}
 "
-# حذف فایل‌های استاتیک و APIهای خاص
+# Remove static files and specific APIs
 cat urls-with-params.txt | grep -vE "\.(js|css|png|jpg|jpeg|svg|woff|woff2|ttf|eot|ico|gif|map|json|xml|webp|pdf)(\?|$)" | grep -v "/wp-json/" > urls-with-params-clean.txt
 
 echo -ne "${BLUE}[6/9] Normalizing and deduplicating URLs...${NC}
 "
-# نرمال‌سازی و حذف پورت 80 و تکراری‌ها
+# Normalize and remove port 80 and duplicates
 cat urls-with-params-clean.txt | sed 's/:80//' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www\.//' | sort -u > tmp.txt && mv tmp.txt urls-with-params-clean.txt
 
 echo -ne "${BLUE}[7/9] Running ParamSpider for POST discovery...${NC}
 "
-# اجرای ParamSpider برای POST URLs
+# Run ParamSpider to find POST URLs
 paramspider -d $domain > post-links.txt
 
 echo -ne "${BLUE}[8/9] Preparing Dalfox options...${NC}
 "
-# اجرای Dalfox
+# Run Dalfox
 read -p "❓ Do you want to run Dalfox for XSS testing? [y/n]: " confirm
 if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
     echo -e "${YELLOW}📘 Select test level:
@@ -120,4 +120,4 @@ else
 fi
 echo -ne "${BLUE}[9/9] Recon finished. Ready for Dalfox.${NC}
 "
-echo -e "${GREEN}✅ بخش شناسایی اولیه کامل شد. می‌تونی تست Dalfox رو اجرا کنی.${NC}"
+echo -e "${GREEN}✅ Initial recon completed. You can now run Dalfox tests.${NC}"
